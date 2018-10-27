@@ -62,68 +62,66 @@ human_DiffPairs = human_DiffPairs.head(791)
 
 # Human Observed Same Pairs.
 humanObserved_Same_Features = getFeatures(humanObserved, human_SamePairs)
-humanObserved_Same_Features_Concat = humanObserved_Same_Features[0]
+humanObserved_Features_Concat = humanObserved_Same_Features[0]
 humanObserved_Same_Features_Sub = humanObserved_Same_Features[1]
-humanObserved_Same_Target = np.ones(shape=(len(humanObserved_Same_Features_Concat), 1))
+humanObserved_Target_Concat = np.ones(shape=(len(humanObserved_Features_Concat), 1))
 
 # Human Observed different Pairs.
 humanObserved_Diff_Features = getFeatures(humanObserved, human_DiffPairs)
-humanObserved_Diff_Features_Concat = humanObserved_Diff_Features[0]
+humanObserved_Features_Sub = humanObserved_Diff_Features[0]
 humanObserved_Diff_Features_Sub = humanObserved_Diff_Features[1]
-humanObserved_Diff_Target = np.zeros(shape=(len(humanObserved_Diff_Features_Concat), 1))
+humanObserved_Target_Sub = np.zeros(shape=(len(humanObserved_Features_Sub), 1))
 
-humanObserved_Same_Features_Concat = np.append(humanObserved_Same_Features_Concat,humanObserved_Same_Target,axis=1)
-humanObserved_Same_Features_Sub = np.append(humanObserved_Same_Features_Sub,humanObserved_Same_Target,axis=1)
-humanObserved_Diff_Features_Concat = np.append(humanObserved_Diff_Features_Concat,humanObserved_Diff_Target,axis=1)
-humanObserved_Diff_Features_Sub = np.append(humanObserved_Diff_Features_Sub,humanObserved_Diff_Target,axis=1)
+humanObserved_Features_Concat = np.append(humanObserved_Features_Concat, humanObserved_Target_Concat, axis=1)
+humanObserved_Same_Features_Sub = np.append(humanObserved_Same_Features_Sub, humanObserved_Target_Concat, axis=1)
+humanObserved_Features_Sub = np.append(humanObserved_Features_Sub, humanObserved_Target_Sub, axis=1)
+humanObserved_Diff_Features_Sub = np.append(humanObserved_Diff_Features_Sub, humanObserved_Target_Sub, axis=1)
 
-humanObserved_Features_Concat = np.append(humanObserved_Same_Features_Concat, humanObserved_Diff_Features_Concat, axis=0)
+humanObserved_Features_Concat = np.append(humanObserved_Features_Concat, humanObserved_Features_Sub, axis=0)
 humanObserved_Features_Sub = np.append(humanObserved_Same_Features_Sub, humanObserved_Diff_Features_Sub, axis=0)
 
 np.random.shuffle(humanObserved_Features_Concat)
 np.random.shuffle(humanObserved_Features_Sub)
 
-humanObserved_Same_Target = humanObserved_Features_Concat[:, [18]]
-humanObserved_Same_Features_Concat = np.delete(humanObserved_Features_Concat, [18], axis=1)
-print("humanObserved_Same_Target",humanObserved_Same_Target.shape)
-print("humanObserved_Same_Features_Concat",humanObserved_Same_Features_Concat.shape)
-print("humanObserved_Same_Features_Sub",humanObserved_Same_Features_Sub.shape)
+humanObserved_Target_Concat = humanObserved_Features_Concat[:, [18]]
+humanObserved_Features_Concat = np.delete(humanObserved_Features_Concat, [18], axis=1)
+print("humanObserved_Same_Target", humanObserved_Target_Concat.shape)
+print("humanObserved_Features_Concat", humanObserved_Features_Concat.shape)
 
-humanObserved_Diff_Target = humanObserved_Features_Sub[:, [9]]
-humanObserved_Diff_Features_Concat = np.delete(humanObserved_Features_Sub, [9], axis=1)
-print("humanObserved_Diff_Target", humanObserved_Diff_Target.shape)
-print("humanObserved_Diff_Features_Concat", humanObserved_Diff_Features_Concat.shape)
-print("humanObserved_Diff_Features_Sub", humanObserved_Diff_Features_Sub.shape)
+humanObserved_Target_Sub = humanObserved_Features_Sub[:, [9]]
+humanObserved_Features_Sub = np.delete(humanObserved_Features_Sub, [9], axis=1)
+print("humanObserved_Diff_Target", humanObserved_Target_Sub.shape)
+print("humanObserved_Diff_Features_Concat", humanObserved_Features_Sub.shape)
 
 # Training, Testing and Validation for HumanObserved_Same pairs
-Training_HumanObserved_Same_Target = GenerateTrainingTarget(humanObserved_Same_Target, TrainingPercent)
-Training_HumanObserved_Same_Features = GenerateTrainingDataMatrix(humanObserved_Same_Features_Concat, TrainingPercent)
+Training_HumanObserved_Same_Target = GenerateTrainingTarget(humanObserved_Target_Concat, TrainingPercent)
+Training_HumanObserved_Same_Features = GenerateTrainingDataMatrix(humanObserved_Features_Concat, TrainingPercent)
 print("TrainingHumanObservedSameTarget: ", Training_HumanObserved_Same_Target.shape)
 print("TrainingHumanObservedSameFeatures :", Training_HumanObserved_Same_Features.shape)
 
-Val_HumanObserved_Same_Target = GenerateValTargetVector(humanObserved_Same_Target, ValidationPercent, (len(Training_HumanObserved_Same_Target)))
-Val_HumanObserved_Same_Features = GenerateValData(humanObserved_Same_Features_Concat, ValidationPercent, (len(Training_HumanObserved_Same_Target)))
+Val_HumanObserved_Same_Target = GenerateValTargetVector(humanObserved_Target_Concat, ValidationPercent, (len(Training_HumanObserved_Same_Target)))
+Val_HumanObserved_Same_Features = GenerateValData(humanObserved_Features_Concat, ValidationPercent, (len(Training_HumanObserved_Same_Target)))
 print("ValHumanObservedSameTarget: ", Val_HumanObserved_Same_Target.shape)
 print("ValHumanObservedSameFeatures: ", Val_HumanObserved_Same_Features.shape)
 
-Test_HumanObserved_Same_Target = GenerateValTargetVector(humanObserved_Same_Target, TestPercent, (len(Training_HumanObserved_Same_Target) + len(Val_HumanObserved_Same_Target)))
-Test_HumanObserved_Same_Features = GenerateValData(humanObserved_Same_Features_Concat, TestPercent, (len(Training_HumanObserved_Same_Target) + len(Val_HumanObserved_Same_Target)))
+Test_HumanObserved_Same_Target = GenerateValTargetVector(humanObserved_Target_Concat, TestPercent, (len(Training_HumanObserved_Same_Target) + len(Val_HumanObserved_Same_Target)))
+Test_HumanObserved_Same_Features = GenerateValData(humanObserved_Features_Concat, TestPercent, (len(Training_HumanObserved_Same_Target) + len(Val_HumanObserved_Same_Target)))
 print("TestHumanObservedSameTarget:", Test_HumanObserved_Same_Target.shape)
 print("TestHumanObservedSameFeatures:", Test_HumanObserved_Same_Features.shape)
 
 # Training, Testing and Validation for HumanObserved_Diff pairs
-Training_HumanObserved_Diff_Target = GenerateTrainingTarget(humanObserved_Diff_Target, TrainingPercent)
-Training_HumanObserved_Diff_Features = GenerateTrainingDataMatrix(humanObserved_Diff_Features_Concat, TrainingPercent)
+Training_HumanObserved_Diff_Target = GenerateTrainingTarget(humanObserved_Target_Sub, TrainingPercent)
+Training_HumanObserved_Diff_Features = GenerateTrainingDataMatrix(humanObserved_Features_Sub, TrainingPercent)
 print("TrainingHumanObservedDiffTarget: ", Training_HumanObserved_Diff_Target.shape)
 print("TrainingHumanObservedDiffFeatures :", Training_HumanObserved_Diff_Features.shape)
 
-Val_HumanObserved_Diff_Target = GenerateValTargetVector(humanObserved_Diff_Target, ValidationPercent, (len(Training_HumanObserved_Diff_Target)))
-Val_HumanObserved_Diff_Features = GenerateValData(humanObserved_Diff_Features_Concat, ValidationPercent, (len(Training_HumanObserved_Diff_Target)))
+Val_HumanObserved_Diff_Target = GenerateValTargetVector(humanObserved_Target_Sub, ValidationPercent, (len(Training_HumanObserved_Diff_Target)))
+Val_HumanObserved_Diff_Features = GenerateValData(humanObserved_Features_Sub, ValidationPercent, (len(Training_HumanObserved_Diff_Target)))
 print("ValHumanObservedDiffTarget: ", Val_HumanObserved_Diff_Target.shape)
 print("ValHumanObservedSDiffFeatures: ", Val_HumanObserved_Diff_Features.shape)
 
-Test_HumanObserved_Diff_Target = GenerateValTargetVector(humanObserved_Diff_Target, TestPercent, (len(Training_HumanObserved_Diff_Target) + len(Val_HumanObserved_Same_Target)))
-Test_HumanObserved_Diff_Features = GenerateValData(humanObserved_Diff_Features_Concat, TestPercent, (len(Training_HumanObserved_Diff_Target) + len(Val_HumanObserved_Same_Target)))
+Test_HumanObserved_Diff_Target = GenerateValTargetVector(humanObserved_Target_Sub, TestPercent, (len(Training_HumanObserved_Diff_Target) + len(Val_HumanObserved_Same_Target)))
+Test_HumanObserved_Diff_Features = GenerateValData(humanObserved_Features_Sub, TestPercent, (len(Training_HumanObserved_Diff_Target) + len(Val_HumanObserved_Same_Target)))
 print("TestHumanObservedDiffTarget:", Test_HumanObserved_Diff_Target.shape)
 print("TestHumanObservedDiffFeatures:", Test_HumanObserved_Diff_Features.shape)
 
@@ -138,67 +136,66 @@ GSC_DiffPairs = readFile(path.relpath("GSC-Features-Data/diffn_pairs.csv"))
 GSC_DiffPairs = GSC_DiffPairs.sample(frac=1).reset_index(drop=True)
 GSC_DiffPairs = GSC_DiffPairs.head(3000)
 GSCObserved_Same_Features = getFeatures(GSCObserved, GSC_SamePairs)
-GSCObserved_Same_Features_Concat = GSCObserved_Same_Features[0]
+GSCObserved_Features_Concat = GSCObserved_Same_Features[0]
 GSCObserved_Same_Features_Sub = GSCObserved_Same_Features[1]
-GSCObserved_Same_Target = np.ones(shape=(len(GSCObserved_Same_Features_Concat), 1))
+GSCObserved_Target_Concat = np.ones(shape=(len(GSCObserved_Features_Concat), 1))
 
 GSCObserved_Diff_Features = getFeatures(GSCObserved, GSC_DiffPairs)
-GSCObserved_Diff_Features_Concat = GSCObserved_Diff_Features[0]
+GSCObserved_Features_Sub = GSCObserved_Diff_Features[0]
 GSCObserved_Diff_Features_Sub = GSCObserved_Diff_Features[1]
-GSCObserved_Diff_Target = np.zeros(shape=(len(GSCObserved_Diff_Features_Concat), 1))
+GSCObserved_Target_Sub = np.zeros(shape=(len(GSCObserved_Features_Sub), 1))
 
-GSCObserved_Same_Features_Concat = np.append(GSCObserved_Same_Features_Concat,GSCObserved_Same_Target,axis=1)
-GSCObserved_Same_Features_Sub = np.append(GSCObserved_Same_Features_Sub,GSCObserved_Same_Target,axis=1)
-GSCObserved_Diff_Features_Concat = np.append(GSCObserved_Diff_Features_Concat,GSCObserved_Diff_Target,axis=1)
-GSCObserved_Diff_Features_Sub = np.append(GSCObserved_Diff_Features_Sub,GSCObserved_Diff_Target,axis=1)
+GSCObserved_Features_Concat = np.append(GSCObserved_Features_Concat, GSCObserved_Target_Concat, axis=1)
+GSCObserved_Same_Features_Sub = np.append(GSCObserved_Same_Features_Sub, GSCObserved_Target_Concat, axis=1)
+GSCObserved_Features_Sub = np.append(GSCObserved_Features_Sub, GSCObserved_Target_Sub, axis=1)
+GSCObserved_Diff_Features_Sub = np.append(GSCObserved_Diff_Features_Sub, GSCObserved_Target_Sub, axis=1)
 
-GSCObserved_Features_Concat = np.append(GSCObserved_Same_Features_Concat,GSCObserved_Diff_Features_Concat,axis=0)
+GSCObserved_Features_Concat = np.append(GSCObserved_Features_Concat, GSCObserved_Features_Sub, axis=0)
 GSCObserved_Features_Sub = np.append(GSCObserved_Same_Features_Sub,GSCObserved_Diff_Features_Sub,axis=0)
 
 np.random.shuffle(GSCObserved_Features_Concat)
 np.random.shuffle(GSCObserved_Features_Sub)
 
-GSCObserved_Same_Target = GSCObserved_Features_Concat[:,[1024]]
-GSCObserved_Same_Features_Concat = np.delete(GSCObserved_Features_Concat,[1024],axis=1)
-print("GSCObserved_Same_Target: ", GSCObserved_Same_Target.shape)
-print("GSCObserved_Same_Features_Concat: ", GSCObserved_Same_Features_Concat.shape)
-print("GSCObserved_Same_Features_Sub: ", GSCObserved_Same_Features_Sub.shape)
+GSCObserved_Target_Concat = GSCObserved_Features_Concat[:, [1024]]
+GSCObserved_Features_Concat = np.delete(GSCObserved_Features_Concat, [1024], axis=1)
+print("GSCObserved_Same_Target: ", GSCObserved_Target_Concat.shape)
+print("GSCObserved_Same_Features_Concat: ", GSCObserved_Features_Concat.shape)
 
-GSCObserved_Diff_Target = GSCObserved_Features_Sub[:,[512]]
-GSCObserved_Diff_Features_Concat = np.delete(GSCObserved_Features_Sub,[512],axis=1)
-print("GSCObserved_Diff_Target: ", GSCObserved_Diff_Target.shape)
-print("GSCObserved_Diff_Features_Concat: ", GSCObserved_Diff_Features_Concat.shape)
+GSCObserved_Target_Sub = GSCObserved_Features_Sub[:, [512]]
+GSCObserved_Features_Sub = np.delete(GSCObserved_Features_Sub, [512], axis=1)
+print("GSCObserved_Diff_Target: ", GSCObserved_Target_Sub.shape)
+print("GSCObserved_Diff_Features_Concat: ", GSCObserved_Features_Sub.shape)
 print("GSCObserved_Diff_Features_Sub: ", GSCObserved_Diff_Features_Sub.shape)
 
 # Training, testing and validation for GSC_Same pairs
-Training_GSCObserved_Same_Target = GenerateTrainingTarget(GSCObserved_Same_Target, TrainingPercent)
-Training_GSCObserved_Same_Features = GenerateTrainingDataMatrix(GSCObserved_Same_Features_Concat, TrainingPercent)
+Training_GSCObserved_Same_Target = GenerateTrainingTarget(GSCObserved_Target_Concat, TrainingPercent)
+Training_GSCObserved_Same_Features = GenerateTrainingDataMatrix(GSCObserved_Features_Concat, TrainingPercent)
 print("Training_GSCObserved_Same_Target: ", Training_GSCObserved_Same_Target.shape)
 print("Training_GSCObserved_Same_Features :", Training_GSCObserved_Same_Features.shape)
 
-Val_GSCObserved_Same_Target = GenerateValTargetVector(GSCObserved_Same_Target, ValidationPercent, (len(Training_GSCObserved_Same_Target)))
-Val_GSCObserved_Same_Features = GenerateValData(GSCObserved_Same_Features_Concat, ValidationPercent, (len(Training_GSCObserved_Same_Target)))
+Val_GSCObserved_Same_Target = GenerateValTargetVector(GSCObserved_Target_Concat, ValidationPercent, (len(Training_GSCObserved_Same_Target)))
+Val_GSCObserved_Same_Features = GenerateValData(GSCObserved_Features_Concat, ValidationPercent, (len(Training_GSCObserved_Same_Target)))
 print("Val_GSCObserved_Same_Target: ", Val_GSCObserved_Same_Target.shape)
 print("Val_GSCObserved_Same_Features: ", Val_GSCObserved_Same_Features.shape)
 
-Test_GSCObserved_Same_Target = GenerateValTargetVector(humanObserved_Same_Target, TestPercent, (len(Training_GSCObserved_Same_Target) + len(Val_GSCObserved_Same_Target)))
-Test_GSCObserved_Same_Features = GenerateValData(GSCObserved_Same_Features_Concat, TestPercent, (len(Training_GSCObserved_Same_Target) + len(Val_GSCObserved_Same_Target)))
+Test_GSCObserved_Same_Target = GenerateValTargetVector(humanObserved_Target_Concat, TestPercent, (len(Training_GSCObserved_Same_Target) + len(Val_GSCObserved_Same_Target)))
+Test_GSCObserved_Same_Features = GenerateValData(GSCObserved_Features_Concat, TestPercent, (len(Training_GSCObserved_Same_Target) + len(Val_GSCObserved_Same_Target)))
 print("Test_GSCObserved_Same_Target:", Test_GSCObserved_Same_Target.shape)
 print("Test_GSCObserved_Same_Features:", Test_GSCObserved_Same_Features.shape)
 
 # Training, testing and Validation for GSC_different pairs
-Training_GSCObserved_Diff_Target = GenerateTrainingTarget(GSCObserved_Diff_Target, TrainingPercent)
-Training_GSCObserved_Diff_Features = GenerateTrainingDataMatrix(GSCObserved_Diff_Features_Concat, TrainingPercent)
+Training_GSCObserved_Diff_Target = GenerateTrainingTarget(GSCObserved_Target_Sub, TrainingPercent)
+Training_GSCObserved_Diff_Features = GenerateTrainingDataMatrix(GSCObserved_Features_Sub, TrainingPercent)
 print("Training_GSCObserved_Diff_Target: ", Training_GSCObserved_Diff_Target.shape)
 print("Training_GSCObserved_Diff_Features :", Training_GSCObserved_Diff_Features.shape)
 
-Val_GSCObserved_Diff_Target = GenerateValTargetVector(GSCObserved_Diff_Target, ValidationPercent, (len(Training_GSCObserved_Diff_Target)))
-Val_GSCObserved_Diff_Features = GenerateValData(GSCObserved_Diff_Features_Concat, ValidationPercent, (len(Training_GSCObserved_Diff_Target)))
+Val_GSCObserved_Diff_Target = GenerateValTargetVector(GSCObserved_Target_Sub, ValidationPercent, (len(Training_GSCObserved_Diff_Target)))
+Val_GSCObserved_Diff_Features = GenerateValData(GSCObserved_Features_Sub, ValidationPercent, (len(Training_GSCObserved_Diff_Target)))
 print("Val_GSCObserved_Diff_Target: ", Val_GSCObserved_Diff_Target.shape)
 print("Val_GSCObserved_Diff_Features: ", Val_GSCObserved_Diff_Features.shape)
 
-Test_GSCObserved_Diff_Target = GenerateValTargetVector(humanObserved_Diff_Target, TestPercent, (len(Training_GSCObserved_Diff_Target) + len(Val_GSCObserved_Diff_Target)))
-Test_GSCObserved_Diff_Features = GenerateValData(GSCObserved_Diff_Features_Concat, TestPercent, (len(Training_GSCObserved_Diff_Target) + len(Val_GSCObserved_Diff_Target)))
+Test_GSCObserved_Diff_Target = GenerateValTargetVector(humanObserved_Target_Sub, TestPercent, (len(Training_GSCObserved_Diff_Target) + len(Val_GSCObserved_Diff_Target)))
+Test_GSCObserved_Diff_Features = GenerateValData(GSCObserved_Features_Sub, TestPercent, (len(Training_GSCObserved_Diff_Target) + len(Val_GSCObserved_Diff_Target)))
 print("Test_GSCObserved_Diff_Target:", Test_GSCObserved_Diff_Target.shape)
 print("Test_GSCObserved_Diff_Features:", Test_GSCObserved_Diff_Features.shape)
 
